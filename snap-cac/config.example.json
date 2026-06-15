@@ -1,0 +1,20 @@
+{
+  "anthropic_api_key": "YOUR_ANTHROPIC_API_KEY",
+  "pexels_api_key": "YOUR_PEXELS_API_KEY",
+  "post_bridge_api_key": "YOUR_POST_BRIDGE_API_KEY",
+  "snaphomz_api_base": "https://api.snaphomz.com",
+  "snaphomz_api_key": "YOUR_SNAPHOMZ_API_KEY",
+  "target_zip_codes": ["90210", "10001", "60601", "77001", "85001"],
+  "post_frequency": "daily",
+  "post_times": ["09:00", "17:00"],
+  "content_types": ["rate_alert", "market_update", "school_spotlight", "buyer_tip"],
+  "social_accounts": {
+    "tiktok": true,
+    "instagram": true,
+    "youtube_shorts": true
+  },
+  "cta_url": "https://snaphomz.com",
+  "brand_name": "Snaphomz",
+  "utm_source": "social_auto",
+  "utm_medium": "organic_video"
+}

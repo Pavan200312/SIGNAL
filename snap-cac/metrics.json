@@ -1,0 +1,38 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "type": "rate_alert",
+      "title": "Mortgage Rate Alert \u2014 6.82% | New York",
+      "platforms": [
+        "TikTok",
+        "Instagram",
+        "YouTube"
+      ],
+      "posted_at": "2026-06-11T17:16:00.758452",
+      "views": 8209,
+      "clicks": 610,
+      "signups": 42
+    },
+    {
+      "id": 2,
+      "type": "rate_alert",
+      "title": "Mortgage Rate Alert \u2014 6.82% | New York",
+      "platforms": [
+        "TikTok",
+        "Instagram",
+        "YouTube"
+      ],
+      "posted_at": "2026-06-11T17:16:35.222591",
+      "views": 9554,
+      "clicks": 642,
+      "signups": 74
+    }
+  ],
+  "total_views": 17763,
+  "total_clicks": 1252,
+  "total_signups": 116,
+  "total_ad_spend": 0,
+  "organic_signups": 116,
+  "sessions": []
+}

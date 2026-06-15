@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnapMarket Pulse</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── Snaphomz tokens ──────────────────────────────────────────────────── */
+:root {
+  --snap-orange:       #F57F2E;
+  --snap-orange-h:     #E0701F;
+  --snap-orange-soft:  #FFF1E6;
+  --snap-orange-ring:  rgba(245,127,46,0.2);
+  --snap-ink:          #1A1717;
+  --snap-cream:        #FAF9F5;
+  --snap-cream-deep:   #F3EFE5;
+  --snap-white:        #FFFFFF;
+  --snap-gray-50:      #F7F6F2;
+  --snap-gray-100:     #EDEBE5;
+  --snap-gray-200:     #E2E2E2;
+  --snap-gray-400:     #A7A39B;
+  --snap-gray-500:     #7D7A73;
+  --snap-gray-600:     #565450;
+  --bg-dark:           #15120F;
+  --border-1:          #ECE7DC;
+  --border-2:          #DCD6C8;
+  --fg-1:              #1A1717;
+  --fg-2:              #565450;
+  --fg-3:              #7D7A73;
+  --success:           #0B5D3B;
+  --success-bg:        #E6F4EC;
+  --danger:            #B4261A;
+  --danger-bg:         #FDECEA;
+  --warning:           #8A5200;
+  --warning-bg:        #FFF3E0;
+  --info:              #0B3D91;
+  --info-bg:           #E7EEFB;
+  --r-xs:  6px;  --r-sm: 10px; --r-md: 14px;
+  --r-lg:  18px; --r-xl: 24px; --r-pill: 999px;
+  --shadow-xs: 0 1px 2px rgba(35,31,32,0.04);
+  --shadow-sm: 0 2px 8px rgba(35,31,32,0.05), 0 1px 2px rgba(35,31,32,0.04);
+  --shadow-md: 0 8px 24px rgba(35,31,32,0.08), 0 2px 6px rgba(35,31,32,0.04);
+  --shadow-lg: 0 20px 48px rgba(35,31,32,0.12), 0 4px 12px rgba(35,31,32,0.06);
+  --grad-ai:   linear-gradient(100deg,#F57F2E 0%,#E84C85 50%,#A64EBA 100%);
+  --ease:      cubic-bezier(0.2,0,0,1);
+  --dur:       180ms;
+  --dur-fast:  120ms;
+  --font: 'Satoshi','Manrope',system-ui,sans-serif;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { height:100%; font-family:var(--font); background:var(--snap-cream); color:var(--fg-1); -webkit-font-smoothing:antialiased; }
+
+/* ─── App shell ─────────────────────────────────────────────────────────── */
+.app { display:grid; grid-template-columns:224px 1fr; height:100vh; overflow:hidden; }
+
+/* ─── Sidebar ────────────────────────────────────────────────────────────── */
+.sidebar {
+  background:var(--snap-white);
+  border-right:1px solid var(--border-1);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+
+.sb-logo {
+  padding:20px 18px 16px;
+  border-bottom:1px solid var(--border-1);
+}
+.sb-wordmark { display:flex; align-items:center; gap:0; }
+.sb-wordmark-snap  { font-size:15px; font-weight:700; letter-spacing:-0.02em; color:var(--fg-1); }
+.sb-wordmark-pulse { font-size:15px; font-weight:700; letter-spacing:-0.02em; color:var(--snap-orange); }
+.sb-pulse-dot {
+  width:6px; height:6px; border-radius:999px;
+  background:var(--grad-ai); margin-left:3px; align-self:center; flex-shrink:0;
+  animation:dot-breathe 2.4s ease-in-out infinite;
+}
+@keyframes dot-breathe { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.55;transform:scale(1.4)} }
+.sb-tagline { font-size:11px; color:var(--fg-3); margin-top:4px; }
+
+/* Role switcher */
+.sb-roles { padding:14px 14px 12px; border-bottom:1px solid var(--border-1); }
+.sb-roles-lbl, .sb-nav-lbl {
+  font-size:10px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--fg-3); margin-bottom:8px; padding:0 2px;
+}
+
+.role-btn {
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:9px 10px; border-radius:var(--r-md);
+  border:1px solid transparent; background:transparent;
+  color:var(--fg-2); font-family:var(--font); font-size:13.5px; font-weight:500;
+  cursor:pointer; transition:all var(--dur-fast) var(--ease); text-align:left;
+  margin-bottom:2px;
+}
+.role-icon {
+  width:32px; height:32px; border-radius:var(--r-sm);
+  background:var(--snap-gray-100); display:grid; place-items:center;
+  font-size:15px; flex-shrink:0; transition:all var(--dur-fast) var(--ease);
+}
+.role-desc { font-size:10px; opacity:0.55; line-height:1.2; }
+.role-btn:hover { background:var(--snap-cream-deep); color:var(--fg-1); }
+.role-btn:hover .role-icon { background:var(--snap-gray-200); }
+.role-btn.active { background:var(--snap-orange-soft); color:var(--snap-orange); border-color:rgba(245,127,46,0.2); font-weight:600; }
+.role-btn.active .role-icon { background:var(--snap-orange); color:#fff; }
+
+/* Nav */
+.sb-nav { flex:1; padding:14px; overflow-y:auto; }
+.nav-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 10px; border-radius:var(--r-sm);
+  color:var(--fg-2); font-size:13.5px; font-weight:500;
+  cursor:pointer; text-decoration:none;
+  transition:all var(--dur-fast) var(--ease); margin-bottom:1px;
+}
+.nav-item:hover { background:var(--snap-cream-deep); color:var(--fg-1); }
+.nav-item.active { background:var(--snap-orange-soft); color:var(--snap-orange); font-weight:600; }
+.nav-badge {
+  background:var(--snap-orange); color:#fff;
+  font-size:10px; font-weight:700;
+  padding:1px 7px; border-radius:var(--r-pill);
+}
+.nav-divider { height:1px; background:var(--border-1); margin:10px 0; }
+
+/* Sidebar footer */
+.sb-footer { padding:12px 14px; border-top:1px solid var(--border-1); }
+.location-pill {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 11px; border-radius:var(--r-sm);
+  border:1px solid var(--border-2); background:var(--snap-cream);
+  color:var(--fg-2); font-size:12px; font-weight:500; cursor:pointer;
+  transition:all var(--dur-fast) var(--ease);
+}
+.location-pill:hover { border-color:var(--snap-orange); color:var(--snap-orange); }
+.location-pill svg { flex-shrink:0; }
+
+/* ─── Main ───────────────────────────────────────────────────────────────── */
+.main { display:flex; flex-direction:column; overflow:hidden; }
+
+/* Topbar */
+.topbar {
+  padding:14px 26px;
+  background:rgba(250,249,245,0.88);
+  backdrop-filter:saturate(140%) blur(12px);
+  -webkit-backdrop-filter:saturate(140%) blur(12px);
+  border-bottom:1px solid var(--border-1);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; gap:16px;
+}
+.tb-greeting { font-size:18px; font-weight:700; letter-spacing:-0.02em; color:var(--fg-1); }
+.tb-sub { font-size:12px; color:var(--fg-3); margin-top:3px; }
+.tb-sub .live { color:var(--snap-orange); font-weight:600; }
+.tb-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+.updated-pill {
+  display:flex; align-items:center; gap:6px;
+  padding:5px 11px; border-radius:var(--r-pill);
+  border:1px solid var(--border-2); background:var(--snap-white);
+  font-size:11px; color:var(--fg-3); font-weight:500;
+}
+.live-dot { width:6px; height:6px; border-radius:999px; background:#0B5D3B; animation:blink 2.2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.ai-pill {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 12px; border-radius:var(--r-pill);
+  background:var(--grad-ai); background-size:200% 100%;
+  animation:shimmer 5s linear infinite;
+  color:#fff; font-size:11px; font-weight:700; letter-spacing:0.05em;
+}
+.ai-pill-dot { width:6px; height:6px; border-radius:999px; background:rgba(255,255,255,0.6); }
+@keyframes shimmer { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+.icon-btn {
+  width:36px; height:36px; border-radius:var(--r-pill);
+  background:var(--snap-white); border:1px solid var(--border-1);
+  display:grid; place-items:center;
+  cursor:pointer; color:var(--fg-2);
+  transition:all var(--dur-fast) var(--ease); position:relative;
+}
+.icon-btn:hover { background:var(--snap-cream-deep); }
+.notif-dot {
+  position:absolute; top:6px; right:6px;
+  width:7px; height:7px; border-radius:999px;
+  background:var(--snap-orange); border:1.5px solid var(--snap-white);
+}
+.avatar {
+  width:34px; height:34px; border-radius:999px;
+  background:linear-gradient(135deg,#E8804C,#A64EBA);
+  color:#fff; display:grid; place-items:center;
+  font-size:12px; font-weight:700; cursor:pointer;
+  box-shadow:var(--shadow-sm); flex-shrink:0;
+}
+
+/* ─── Content area ───────────────────────────────────────────────────────── */
+.content {
+  flex:1; overflow-y:auto;
+  padding:22px 26px 32px;
+  display:flex; flex-direction:column; gap:16px;
+}
+
+/* Stats row */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.stat-card {
+  background:var(--snap-white); border-radius:var(--r-lg);
+  border:1px solid var(--border-1); box-shadow:var(--shadow-sm);
+  padding:16px 18px;
+  cursor:pointer; transition:all var(--dur) var(--ease);
+}
+.stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.stat-label {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.12em; color:var(--fg-3); margin-bottom:10px;
+}
+.stat-value {
+  font-size:28px; font-weight:700; letter-spacing:-0.025em;
+  color:var(--fg-1); line-height:1; margin-bottom:5px;
+  font-feature-settings:"tnum";
+}
+.stat-value.accent { color:var(--snap-orange); }
+.stat-delta {
+  font-size:12px; font-weight:500;
+  display:flex; align-items:center; gap:4px;
+}
+.stat-delta.up   { color:var(--success); }
+.stat-delta.down { color:var(--danger); }
+.stat-delta.flat { color:var(--fg-3); }
+.stat-spark { margin-top:10px; }
+
+/* Middle row */
+.mid-row { display:grid; grid-template-columns:1fr 300px; gap:14px; min-height:260px; }
+
+/* AI Brief */
+.ai-brief {
+  background:var(--bg-dark);
+  border-radius:var(--r-xl); padding:24px;
+  display:flex; flex-direction:column; gap:14px;
+  position:relative; overflow:hidden;
+}
+.ai-brief::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1.5px;
+  background:var(--grad-ai); background-size:200% 100%;
+  animation:shimmer 4s linear infinite;
+}
+.ai-brief-hd { display:flex; align-items:center; gap:10px; }
+.brief-ai-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:var(--r-pill);
+  background:var(--grad-ai); background-size:200% 100%;
+  animation:shimmer 5s linear infinite;
+  color:#fff; font-size:10px; font-weight:700; letter-spacing:0.06em;
+}
+.brief-meta { font-size:12px; color:rgba(255,255,255,0.38); }
+.brief-body {
+  font-size:17px; font-weight:400; line-height:1.65;
+  color:rgba(250,249,245,0.82);
+  letter-spacing:-0.005em; flex:1;
+}
+.brief-body strong { color:var(--snap-orange); font-weight:700; }
+.brief-chart { position:relative; }
+.brief-tags { display:flex; gap:8px; flex-wrap:wrap; }
+.brief-tag {
+  padding:4px 12px; border-radius:var(--r-pill);
+  border:1px solid rgba(255,255,255,0.12);
+  font-size:11.5px; color:rgba(255,255,255,0.55); font-weight:500;
+}
+.brief-footer { font-size:11px; color:rgba(255,255,255,0.22); line-height:1.5; }
+.brief-footer a { color:rgba(245,127,46,0.7); text-decoration:none; }
+.brief-footer a:hover { color:var(--snap-orange); }
+
+/* Actions */
+.actions-card {
+  background:var(--snap-white); border-radius:var(--r-xl);
+  border:1px solid var(--border-1); box-shadow:var(--shadow-sm);
+  padding:20px; display:flex; flex-direction:column;
+}
+.actions-title { font-size:13.5px; font-weight:700; color:var(--fg-1); margin-bottom:12px; }
+.action-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:9px 0; border-bottom:1px solid var(--snap-gray-100);
+  cursor:pointer;
+}
+.action-item:last-of-type { border-bottom:none; }
+.action-check {
+  width:18px; height:18px; border-radius:5px; flex-shrink:0; margin-top:1px;
+  border:1.5px solid var(--border-2); cursor:pointer;
+  transition:all var(--dur-fast) var(--ease); display:grid; place-items:center;
+}
+.action-item:hover .action-check { border-color:var(--snap-orange); }
+.action-check.done { background:var(--snap-orange); border-color:var(--snap-orange); }
+.action-text { flex:1; font-size:12.5px; line-height:1.45; color:var(--fg-2); }
+.action-item:hover .action-text { color:var(--fg-1); }
+.done-text { text-decoration:line-through; opacity:0.4; }
+.p-chip {
+  padding:2px 8px; border-radius:var(--r-pill);
+  font-size:10px; font-weight:700; flex-shrink:0; align-self:flex-start; margin-top:1px;
+}
+.p-high   { background:var(--warning-bg); color:var(--warning); }
+.p-medium { background:var(--info-bg);    color:var(--info); }
+.p-low    { background:var(--snap-gray-100); color:var(--fg-3); }
+.add-btn {
+  margin-top:auto; padding-top:12px;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px; border-radius:var(--r-md); border:1.5px dashed var(--border-2);
+  background:transparent; color:var(--fg-3); font-size:12.5px; font-weight:500;
+  cursor:pointer; font-family:var(--font); transition:all var(--dur-fast) var(--ease);
+}
+.add-btn:hover { border-color:var(--snap-orange); color:var(--snap-orange); background:var(--snap-orange-soft); }
+
+/* ─── Signal feed ──────────────────────────────────────────────────────── */
+.signals-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.signals-title { display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:700; color:var(--fg-1); }
+.signal-filters { display:flex; gap:6px; }
+.f-chip {
+  padding:5px 12px; border-radius:var(--r-pill);
+  border:1px solid var(--border-2); background:var(--snap-white);
+  font-size:12px; font-weight:600; color:var(--fg-2);
+  cursor:pointer; font-family:var(--font);
+  transition:all var(--dur-fast) var(--ease);
+}
+.f-chip:hover { border-color:var(--fg-3); }
+.f-chip.active { background:var(--snap-ink); color:var(--snap-cream); border-color:var(--snap-ink); }
+.f-chip.see-all { color:var(--snap-orange); border-color:rgba(245,127,46,0.35); }
+.f-chip.see-all:hover { background:var(--snap-orange-soft); }
+
+.signals-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  background:var(--snap-white); border-radius:var(--r-lg);
+  border:1px solid var(--border-1); box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.signal-cell {
+  padding:14px 16px;
+  border-bottom:1px solid var(--border-1);
+  border-right:1px solid var(--border-1);
+  cursor:pointer; transition:background var(--dur-fast) var(--ease);
+  position:relative;
+}
+.signal-cell::after {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:0;
+  background:var(--snap-orange); border-radius:0 2px 2px 0;
+  transition:width var(--dur-fast) var(--ease);
+}
+.signal-cell:hover { background:var(--snap-cream); }
+.signal-cell:hover::after { width:3px; }
+.sig-top { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.src-chip {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:var(--r-xs);
+  font-size:10px; font-weight:700; letter-spacing:0.03em; flex-shrink:0;
+}
+.sig-time { font-size:10px; color:var(--fg-3); margin-left:auto; }
+.sig-text { font-size:13px; font-weight:500; line-height:1.45; color:var(--fg-1); margin-bottom:4px; }
+.sig-sub  { font-size:11px; color:var(--fg-3); line-height:1.4; }
+.sig-link { color:var(--snap-orange); font-weight:600; text-decoration:none; }
+.sig-link:hover { text-decoration:underline; }
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+.fade-swap { animation:fadeSwap 0.22s var(--ease); }
+@keyframes fadeSwap { 0%{opacity:0;transform:translateY(6px)} 100%{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<div class="app">
+<!-- ─── Sidebar ──────────────────────────────────────────────────────────── -->
+<aside class="sidebar">
+
+  <div class="sb-logo">
+    <div class="sb-wordmark">
+      <span class="sb-wordmark-snap">SnapMarket</span>
+      <span class="sb-wordmark-pulse">&nbsp;Pulse</span>
+      <div class="sb-pulse-dot"></div>
+    </div>
+    <div class="sb-tagline">Real estate intelligence, personalized</div>
+  </div>
+
+  <div class="sb-roles">
+    <div class="sb-roles-lbl">I'm a</div>
+    <button class="role-btn active" data-role="agent">
+      <div class="role-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div>Agent</div>
+        <div class="role-desc">Market intel &amp; leads</div>
+      </div>
+    </button>
+    <button class="role-btn" data-role="buyer">
+      <div class="role-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <div>
+        <div>Buyer</div>
+        <div class="role-desc">Rates, timing, deals</div>
+      </div>
+    </button>
+    <button class="role-btn" data-role="seller">
+      <div class="role-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+      </div>
+      <div>
+        <div>Seller</div>
+        <div class="role-desc">Demand &amp; pricing</div>
+      </div>
+    </button>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-nav-lbl">Views</div>
+    <a class="nav-item active" href="#">Overview</a>
+    <a class="nav-item" href="#">Market Intel</a>
+    <a class="nav-item" href="#">Source Feed</a>
+    <a class="nav-item" href="#">Price Trends</a>
+    <a class="nav-item" href="#">
+      Alerts
+      <span class="nav-badge">3</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="sb-nav-lbl">Saved</div>
+    <a class="nav-item" href="#">My Markets</a>
+    <a class="nav-item" href="#">Saved Signals</a>
+  </div>
+
+  <div class="sb-footer">
+    <div class="location-pill">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Austin, TX
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ─── Main ────────────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div>
+      <div class="tb-greeting" id="greeting">Good morning, Sarah 👋</div>
+      <div class="tb-sub" id="tb-sub">Friday, May 30 &nbsp;·&nbsp; Austin market is <span class="live">active</span></div>
+    </div>
+    <div class="tb-right">
+      <div class="updated-pill">
+        <div class="live-dot"></div>
+        Updated 9:42am
+      </div>
+      <div class="ai-pill">
+        <div class="ai-pill-dot"></div>
+        AI ACTIVE
+      </div>
+      <button class="icon-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <div class="notif-dot"></div>
+      </button>
+      <div class="avatar" id="avatar-initials">SL</div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content" id="main-content">
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- Middle row -->
+    <div class="mid-row">
+      <div class="ai-brief" id="ai-brief">
+        <div class="ai-brief-hd">
+          <div class="brief-ai-badge">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/></svg>
+            AI BRIEF
+          </div>
+          <div class="brief-meta" id="brief-meta">Today's Brief · Agent View</div>
+        </div>
+        <div class="brief-body" id="brief-body"></div>
+        <div class="brief-chart">
+          <svg width="100%" height="44" viewBox="0 0 500 44" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F57F2E" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#F57F2E" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,38 C42,35 83,28 125,26 C167,24 208,17 250,15 C292,13 333,9 375,10 C417,11 458,7 500,5"
+              fill="none" stroke="#F57F2E" stroke-width="1.5" opacity="0.55"/>
+            <path d="M0,38 C42,35 83,28 125,26 C167,24 208,17 250,15 C292,13 333,9 375,10 C417,11 458,7 500,5 L500,44 L0,44 Z"
+              fill="url(#cg)"/>
+            <circle cx="500" cy="5" r="3.5" fill="#F57F2E" opacity="0.8"/>
+          </svg>
+        </div>
+        <div class="brief-tags" id="brief-tags"></div>
+        <div class="brief-footer" id="brief-footer"></div>
+      </div>
+
+      <div class="actions-card">
+        <div class="actions-title">Act Today</div>
+        <div id="actions-list"></div>
+        <button class="add-btn" style="margin-top:12px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add action
+        </button>
+      </div>
+    </div>
+
+    <!-- Signals -->
+    <div>
+      <div class="signals-hd">
+        <div class="signals-title">
+          <div class="live-dot"></div>
+          Live Signals
+        </div>
+        <div class="signal-filters" id="sig-filters">
+          <button class="f-chip active" data-filter="All">All</button>
+          <button class="f-chip" data-filter="Reddit">Reddit</button>
+          <button class="f-chip" data-filter="X">X</button>
+          <button class="f-chip" data-filter="News">News</button>
+          <button class="f-chip" data-filter="Fed">Fed</button>
+          <button class="f-chip see-all">See all →</button>
+        </div>
+      </div>
+      <div class="signals-grid" id="signals-grid"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// ─── Persona data ─────────────────────────────────────────────────────────
+const DATA = {
+  agent: {
+    greeting: 'Good morning, Sarah 👋',
+    sub: 'Friday, May 30 &nbsp;·&nbsp; Austin market is <span class="live">active</span>',
+    briefMeta: "Today's Brief · Agent View",
+    brief: `Inventory tightened for the <strong>3rd straight week</strong>. Buyers are active but stuck on rates — Reddit is screaming about buydowns, not price. The Fed is holding in June. <strong>This is your window to list.</strong> Two new price drops in Westlake match your buyer criteria exactly.`,
+    tags: ['↑ Seller window open','⚠ Rate sensitivity high','🏠 Inventory tightening'],
+    footer: 'Based on <strong style="color:rgba(255,255,255,0.45)">847 signals</strong> from Reddit, X, 12 news sources &amp; Federal Reserve data &nbsp;·&nbsp; <a href="#">see all sources ↗</a>',
+    avatarInitials: 'SL',
+    stats: [
+      { label:'30yr Rate Today',   value:'6.87%',   delta:'↑ +0.12 this week',      dir:'down',  spark:[5,4,6,5,7,6,8,7,8,7,9,8] },
+      { label:'Active Inventory',  value:'1,840',   delta:'↓ −12% vs last month',   dir:'down',  spark:[9,9,8,8,7,7,6,6,5,5,5,4] },
+      { label:'Price Drops',       value:'847',     delta:'↑ +34 today',             dir:'up',    accent:true, spark:[3,3,4,5,5,5,6,7,7,8,8,9] },
+      { label:'Buyer Demand',      value:'High',    delta:'↑ above seasonal avg',    dir:'up',    accent:true, spark:[4,5,5,6,6,7,7,8,7,8,8,9] },
+    ],
+    actions:[
+      { text:'Send rate update to your 4 waiting buyer clients', p:'High' },
+      { text:'Review 3 price drops in Westlake matching buyers', p:'High' },
+      { text:'Share Fed hold signal with seller pipeline',        p:'Medium' },
+      { text:'Engage 2 Reddit threads in your zip code',          p:'Low' },
+    ],
+    signals:[
+      { src:'Reddit', c:'#FF4500', bg:'#FFF2EC', text:'"Rates feel impossible — anyone getting buydowns under 5%?"',           sub:'r/FirstTimeHomeBuyer · 847 upvotes', t:'2m' },
+      { src:'Fed',    c:'#0B3D91', bg:'#EAF0FF', text:'2 FOMC officials signal June rate hold — no cut until September',        sub:'Reuters · Federal Reserve',         t:'1h' },
+      { src:'News',   c:'#555',    bg:'#F5F5F3', text:'Austin inventory drops 3rd consecutive week — Board of Realtors',        sub:'Austin American-Statesman',         t:'3h' },
+      { src:'X',      c:'#0F141A', bg:'#F0F0F0', text:'"Toured 8 homes. Nothing under $450k has a garage in Austin anymore"', sub:'@homebuyer_austin · 234 likes',      t:'20m' },
+      { src:'Redfin', c:'#CC0000', bg:'#FDECEC', text:'Barton Hills median price +3.2% in 30 days vs Austin avg +0.4%',         sub:'redfin.com market data',            t:'6h' },
+      { src:'Reddit', c:'#FF4500', bg:'#FFF2EC', text:'"My agent suggested a rate buydown — worth it at 6.87%?"',               sub:'r/RealEstate · 512 upvotes',        t:'45m' },
+    ],
+  },
+  buyer: {
+    greeting: 'Find your moment, Alex 👋',
+    sub: 'Friday, May 30 &nbsp;·&nbsp; <span class="live">847 homes dropped price this week</span>',
+    briefMeta: "Today's Brief · Buyer View",
+    brief: `Rates are at <strong>6.87%</strong> — elevated, but the Fed is holding, not raising. <strong>847 homes dropped price this week.</strong> If you're ready, competition is real but manageable right now. Waiting for sub-6% rates likely means waiting straight through the peak summer bidding season.`,
+    tags: ['↔ Rates holding steady','↑ Competition building','✅ 847 price drops live'],
+    footer: 'Based on <strong style="color:rgba(255,255,255,0.45)">614 signals</strong> from Reddit, X, 8 news sources &amp; Federal Reserve data &nbsp;·&nbsp; <a href="#">see all sources ↗</a>',
+    avatarInitials: 'AK',
+    stats:[
+      { label:'30yr Rate Today',    value:'6.87%',    delta:'↑ +0.12 this week',       dir:'down', spark:[5,4,6,5,7,6,8,7,8,7,9,8] },
+      { label:'Price Drops (7d)',   value:'847',      delta:'↑ +34 today',              dir:'up',   accent:true, spark:[3,3,4,5,5,5,6,7,7,8,8,9] },
+      { label:'Est. Monthly Pmt',   value:'$3,420',   delta:'↑ $180 vs last year',      dir:'down', spark:[4,4,5,5,6,6,7,7,8,8,9,9] },
+      { label:'Listings in Range',  value:'214',      delta:'↓ −8% vs last month',      dir:'down', spark:[9,9,8,8,8,7,7,7,6,6,5,5] },
+    ],
+    actions:[
+      { text:'Review 12 new listings in your saved search',       p:'High' },
+      { text:'Ask your lender about 1pt buydown at 6.87%',         p:'High' },
+      { text:'Schedule tours for 3 price-dropped homes',           p:'Medium' },
+      { text:'Read: why buyers are moving now despite rates',      p:'Low' },
+    ],
+    signals:[
+      { src:'Reddit', c:'#FF4500', bg:'#FFF2EC', text:'"Locked at 6.5% with a 1pt buydown — absolutely worth it"',          sub:'r/FirstTimeHomeBuyer · 1.2k upvotes', t:'5m' },
+      { src:'Fed',    c:'#0B3D91', bg:'#EAF0FF', text:'Fed holds — analysts say earliest cut is now September 2026',         sub:'Wall Street Journal',                t:'1h' },
+      { src:'News',   c:'#555',    bg:'#F5F5F3', text:'Affordability slightly improves as sellers compete for fewer buyers',  sub:'Bloomberg',                          t:'2h' },
+      { src:'X',      c:'#0F141A', bg:'#F0F0F0', text:'"Price drops finally happening. Watched 3 homes cut price today"',   sub:'@austinhomehunt · 89 likes',          t:'30m' },
+      { src:'Zillow', c:'#006AFF', bg:'#EAF0FF', text:'Buyer demand index: 64/100 in Austin — elevated but not peak',        sub:'zillow.com/research',                t:'8h' },
+      { src:'Reddit', c:'#FF4500', bg:'#FFF2EC', text:'"Is now actually a good time to buy? Breaking down the math..."',    sub:'r/personalfinance · 2.1k upvotes',   t:'3h' },
+    ],
+  },
+  seller: {
+    greeting: "It's your window, Jamie 👋",
+    sub: 'Friday, May 30 &nbsp;·&nbsp; Inventory is <span class="live">lowest since March 2024</span>',
+    briefMeta: "Today's Brief · Seller View",
+    brief: `Buyers are searching hard but hitting rate walls — <strong>they want your home</strong>, they're nervous about financing. Inventory is at its lowest since March 2024, so you have less competition than any point last year. Reddit shows buyers are fixated on move-in ready. <strong>List this week — the June window is real.</strong>`,
+    tags: ['↑ Low competition now','✅ Buyers actively searching','🔑 List this week'],
+    footer: 'Based on <strong style="color:rgba(255,255,255,0.45)">731 signals</strong> from Reddit, X, MLS data &amp; Zillow research &nbsp;·&nbsp; <a href="#">see all sources ↗</a>',
+    avatarInitials: 'JR',
+    stats:[
+      { label:'Active Competition', value:'1,840', delta:'↓ −12% vs last month',  dir:'down', spark:[9,9,8,8,7,7,6,6,5,5,5,4] },
+      { label:'Buyer Searches',     value:'↑ High', delta:'↑ 3-week trend',       dir:'up',   accent:true, spark:[4,5,5,6,6,7,7,8,7,8,8,9] },
+      { label:'Avg Days on Market', value:'28',    delta:'↑ +3 vs last month',    dir:'down', spark:[3,3,4,4,5,5,6,6,7,7,8,9] },
+      { label:'List-to-Sale Ratio', value:'97.2%', delta:'↓ −0.8pt vs last mo.', dir:'down', spark:[9,9,9,8,8,8,8,7,7,7,8,7] },
+    ],
+    actions:[
+      { text:'Fix the big 3 items — buyers want move-in ready', p:'High' },
+      { text:'Price 2% under Zestimate to trigger competition',  p:'High' },
+      { text:'List this week to catch the June buyer wave',      p:'Medium' },
+      { text:'Offer 1pt buydown — top Reddit buyer ask this wk', p:'Medium' },
+    ],
+    signals:[
+      { src:'Reddit', c:'#FF4500', bg:'#FFF2EC', text:'"Sellers offering buydowns get offers in days, not weeks"',            sub:'r/FirstTimeHomeBuyer · 1.8k upvotes', t:'2h' },
+      { src:'X',      c:'#0F141A', bg:'#F0F0F0', text:'"Open house in Bouldin was PACKED. Multiple offers by Sunday"',        sub:'@atxagent · 512 likes',               t:'3h' },
+      { src:'News',   c:'#555',    bg:'#F5F5F3', text:'Fewer sellers listing = tighter supply = stronger position for you',    sub:'Inman News',                         t:'5h' },
+      { src:'Zillow', c:'#006AFF', bg:'#EAF0FF', text:'Homes priced 2% below median sell 4× faster in Austin metro',          sub:'zillow.com/research',                t:'12h' },
+      { src:'MLS',    c:'#2D6A4F', bg:'#E6F4EC', text:'Avg seller concession in Austin metro: $8,400 this quarter',           sub:'ACTRIS MLS data',                    t:'8h' },
+      { src:'News',   c:'#555',    bg:'#F5F5F3', text:'Move-in ready homes sell 22% faster than homes needing work',           sub:'redfin.com research',                t:'1d' },
+    ],
+  },
+};
+
+// ─── Sparkline SVG ────────────────────────────────────────────────────────
+function sparkSVG(vals, accent) {
+  const W = 100, H = 32;
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const range = max - min || 1;
+  const pts = vals.map((v, i) => {
+    const x = (i / (vals.length - 1)) * W;
+    const y = H - ((v - min) / range) * (H - 4) - 2;
+    return `${x},${y}`;
+  }).join(' ');
+  const lx = (vals.length-1)/(vals.length-1)*W;
+  const ly = H - ((vals[vals.length-1]-min)/range)*(H-4)-2;
+  const col = accent ? '#F57F2E' : '#C5C1BA';
+  return `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/>
+  </svg>`;
+}
+
+// ─── Render helpers ───────────────────────────────────────────────────────
+function renderStats(stats) {
+  document.getElementById('stats-row').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value${s.accent ? ' accent' : ''}">${s.value}</div>
+      <div class="stat-delta ${s.dir}">${s.delta}</div>
+      <div class="stat-spark">${sparkSVG(s.spark, s.accent)}</div>
+    </div>
+  `).join('');
+}
+
+function renderBrief(d) {
+  document.getElementById('brief-meta').textContent = d.briefMeta;
+  document.getElementById('brief-body').innerHTML = d.brief;
+  document.getElementById('brief-tags').innerHTML = d.tags.map(t =>
+    `<div class="brief-tag">${t}</div>`
+  ).join('');
+  document.getElementById('brief-footer').innerHTML = d.footer;
+}
+
+function renderActions(actions) {
+  document.getElementById('actions-list').innerHTML = actions.map((a, i) => `
+    <div class="action-item" data-idx="${i}">
+      <div class="action-check" data-idx="${i}"></div>
+      <div class="action-text">${a.text}</div>
+      <span class="p-chip p-${a.p.toLowerCase()}">${a.p}</span>
+    </div>
+  `).join('');
+}
+
+function renderSignals(signals) {
+  const grid = document.getElementById('signals-grid');
+  const n = signals.length;
+  grid.innerHTML = signals.map((s, i) => {
+    const isLastRow = i >= n - (n % 3 || 3);
+    const isLastCol = (i + 1) % 3 === 0;
+    return `<div class="signal-cell"
+        style="${isLastRow ? 'border-bottom:none;' : ''}${isLastCol ? 'border-right:none;' : ''}">
+      <div class="sig-top">
+        <span class="src-chip" style="background:${s.bg};color:${s.c};">${s.src}</span>
+        <span class="sig-time">${s.t} ago</span>
+      </div>
+      <div class="sig-text">${s.text}</div>
+      <div class="sig-sub">${s.sub} &nbsp;·&nbsp; <a href="#" class="sig-link">view source ↗</a></div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Render everything for a role ─────────────────────────────────────────
+function render(role) {
+  const d = DATA[role];
+  document.getElementById('greeting').textContent = d.greeting;
+  document.getElementById('tb-sub').innerHTML = d.sub;
+  document.getElementById('avatar-initials').textContent = d.avatarInitials;
+
+  const content = document.getElementById('main-content');
+  content.classList.remove('fade-swap');
+  void content.offsetWidth; // reflow
+  content.classList.add('fade-swap');
+
+  renderStats(d.stats);
+  renderBrief(d);
+  renderActions(d.actions);
+
+  // Reset filter
+  document.querySelectorAll('.f-chip[data-filter]').forEach(c =>
+    c.classList.toggle('active', c.dataset.filter === 'All')
+  );
+  renderSignals(d.signals);
+}
+
+// ─── Role switcher ────────────────────────────────────────────────────────
+let currentRole = 'agent';
+document.querySelectorAll('.role-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRole = btn.dataset.role;
+    render(currentRole);
+  });
+});
+
+// ─── Signal filters ───────────────────────────────────────────────────────
+document.getElementById('sig-filters').addEventListener('click', e => {
+  const chip = e.target.closest('[data-filter]');
+  if (!chip) return;
+  document.querySelectorAll('.f-chip[data-filter]').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  const f = chip.dataset.filter;
+  const sigs = DATA[currentRole].signals;
+  renderSignals(f === 'All' ? sigs : sigs.filter(s => s.src === f));
+});
+
+// ─── Action checkboxes ────────────────────────────────────────────────────
+document.getElementById('actions-list').addEventListener('click', e => {
+  const check = e.target.closest('.action-check');
+  if (!check) return;
+  const done = check.classList.toggle('done');
+  const textEl = check.closest('.action-item').querySelector('.action-text');
+  textEl.classList.toggle('done-text', done);
+  check.innerHTML = done
+    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+    : '';
+});
+
+// ─── Boot ─────────────────────────────────────────────────────────────────
+render('agent');
+</script>
+</body>
+</html>
